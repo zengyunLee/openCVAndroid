@@ -1,10 +1,12 @@
 package com.mobilemd.taimei.autocrop;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
@@ -108,8 +110,12 @@ public class getPictureActivity extends AppCompatActivity {
                 Mat desmat = findAndDrawContours(binaryzation(srcmat));
                 Utils.matToBitmap(desmat,mBitmap);
                 picture.setImageBitmap(mBitmap);*/
-                transform(mBitmap);
-                beginCrop(pendingCrop,cropWidth,cropHeight);
+
+                /*transform(mBitmap);
+                beginCrop(pendingCrop,cropWidth,cropHeight);*/
+
+                transformTask trTask = new transformTask();
+                trTask.execute(mBitmap);
             }
         });
         PickPhoto.setOnClickListener(new View.OnClickListener() {
@@ -319,7 +325,7 @@ public class getPictureActivity extends AppCompatActivity {
         return des;
     }
 
-    public void transform(Bitmap bitmap) {
+    public Bitmap transform(Bitmap bitmap) {
         Bitmap rgbBitmap =  bitmap;
         Mat rgbSrcMat = ImageUtils.bitmapToMat(rgbBitmap);
         Mat correctedImage = new Mat(rgbSrcMat.rows(),rgbSrcMat.cols(),rgbSrcMat.type());
@@ -336,9 +342,51 @@ public class getPictureActivity extends AppCompatActivity {
         //进行透视变换
         Imgproc.warpPerspective(rgbSrcMat,correctedImage,transformation,correctedImage.size());
         Bitmap rgbDesBitmap = ImageUtils.matToBitmap(correctedImage);
-        picture.setImageBitmap(rgbDesBitmap);
-        adapt(rgbDesBitmap);
+        /*picture.setImageBitmap(rgbDesBitmap);
+        adapt(rgbDesBitmap);*/
+        return rgbDesBitmap;
     }
+
+    private class transformTask extends AsyncTask<Bitmap,Integer,Long> {
+        private Bitmap transformedBM;
+        private ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //Toast.makeText(getPictureActivity.this,"图像开始处理",Toast.LENGTH_SHORT).show();
+            progressDialog = new ProgressDialog(getPictureActivity.this);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setTitle("提示");
+            progressDialog.setMessage("图片正在处理...");
+            //progressDialog.setMax(10);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Long doInBackground(Bitmap... bitmaps) {
+            transformedBM = transform(bitmaps[0]);
+            adapt(transformedBM);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Long aLong) {
+            super.onPostExecute(aLong);
+            progressDialog.dismiss();
+            picture.setImageBitmap(transformedBM);
+            beginCrop(pendingCrop,cropWidth,cropHeight);
+            //Toast.makeText(getPictureActivity.this,"图像处理结束",Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
+
+    }
+
+
 
     private void adapt(Bitmap rgbDesBitmap) {
         try {
@@ -347,7 +395,7 @@ public class getPictureActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Toast.makeText(getPictureActivity.this,"transform done!",Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getPictureActivity.this,"transform done!",Toast.LENGTH_SHORT).show();
     }
 
     private Uri saveBitmap(Bitmap bitmap,String bitName) throws IOException
