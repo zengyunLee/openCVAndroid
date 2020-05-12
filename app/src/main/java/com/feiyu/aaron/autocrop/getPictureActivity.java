@@ -1,4 +1,4 @@
-package com.mobilemd.taimei.autocrop;
+package com.feiyu.aaron.autocrop;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -18,7 +18,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.mobilemd.taimei.autocrop.Utils.ImageUtils;
+import com.feiyu.aaron.autocrop.Utils.ImageUtils;
 import com.soundcloud.android.crop.Crop;
 
 import org.opencv.android.OpenCVLoader;
@@ -87,7 +87,7 @@ public class getPictureActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 if(Build.VERSION.SDK_INT >=24) {
-                    imageUri = FileProvider.getUriForFile(getPictureActivity.this,"com.mobilemd.taimei.autocrop",outputImage);
+                    imageUri = FileProvider.getUriForFile(getPictureActivity.this,"com.feiyu.aaron.autocrop",outputImage);
                 } else {
                     imageUri = Uri.fromFile(outputImage);
                 }
@@ -400,7 +400,7 @@ public class getPictureActivity extends AppCompatActivity {
 
     private Uri saveBitmap(Bitmap bitmap,String bitName) throws IOException
     {
-        File file = new File("/data/data/com.mobilemd.taimei.autocrop/"+bitName);
+        File file = new File("/data/data/com.feiyu.aaron.autocrop/"+bitName);
         Uri dstUri = Uri.fromFile(file);
         if(file.exists()){
             file.delete();

@@ -1,4 +1,4 @@
-package com.mobilemd.taimei.autocrop;
+package com.feiyu.aaron.autocrop;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;

@@ -1,4 +1,4 @@
-package com.mobilemd.taimei.autocrop.customView;
+package com.feiyu.aaron.autocrop.customView;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.mobilemd.taimei.autocrop.R;
+import com.feiyu.aaron.autocrop.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
